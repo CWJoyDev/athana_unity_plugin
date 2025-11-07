@@ -93,7 +93,7 @@ class AndroidDepsInjection : AndroidProjectFilesModifier
         // ----- Dependencies
         Dependencies Dependencies = CustomGradleFile.Dependencies;
         Dependencies.AddElement(new Element($"var sdkVersion = \"{SdkConfig.AndroidDepsVersion}\""));
-        Dependencies.AddDependencyImplementationRaw("\"com.inonesdk.athana:athana-dev:${sdkVersion}\"");
+        Dependencies.AddDependencyImplementationRaw("\"com.inonesdk.athana:athana:${sdkVersion}\"");
 
         foreach (var dep in Components)
         {
