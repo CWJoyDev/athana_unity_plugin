@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Athana;
 using Athana.Api;
 using Athana.Callbacks;
 
@@ -423,6 +422,14 @@ public class AthanaAndroid : AthanaInterface
         }
 
         AthanaUnityPluginClass.CallStatic("requestReview");
+    }
+
+    
+    public static void SendEvent(string key, string type = "game", Dictionary<string, object>? paramMap = null)
+    {
+        AthanaLogger.D($"Calling SendEvent {key}");
+        var paramsJavaObj = paramMap == null ? null : toJavaMap(paramMap);
+        AthanaUnityPluginClass.CallStatic("sendEvent", key, type, paramsJavaObj);
     }
 
     private static AndroidJavaObject? toJavaMap(Dictionary<string, object> extra)

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
+#nullable enable
 [Serializable]
 public class SdkConfigData
 {

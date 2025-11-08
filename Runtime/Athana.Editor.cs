@@ -187,4 +187,9 @@ public class AthanaUnityEditor : AthanaInterface
         AthanaLogger.D("Calling RequestReview on Unity Editor");
     }
 
+    public static void SendEvent(string key, string type = "game", Dictionary<string, object>? paramMap = null)
+    {
+
+        AthanaLogger.D("Calling SendEvent on Unity Editor");
+    }
 }

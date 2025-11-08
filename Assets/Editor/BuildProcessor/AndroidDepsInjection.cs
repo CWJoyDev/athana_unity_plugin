@@ -4,13 +4,13 @@ using Unity.Android.Gradle;
 using UnityEditor.Android;
 using UnityEngine;
 
-
+#nullable enable
 class AndroidDepsInjection : AndroidProjectFilesModifier
 {
-    private static string IS_CHANGED_NAME = "isChanged";
-
-    private static string SDK_DEPS_OPTION_NAME = "athana_options.gradle";
-    private string _sdkDepsOptionBuildGradle = "launcher/" + SDK_DEPS_OPTION_NAME;
+    private static readonly string SDK_DEPS_OPTION_NAME = "athana_options.gradle";
+    private static readonly string FIREBASE_CONFIG_NAME = "google-services.json";
+    private static readonly string _sdkDepsOptionBuildGradle = "launcher/" + SDK_DEPS_OPTION_NAME;
+    private static readonly string _firebaseConfigJSON = "launcher/" + FIREBASE_CONFIG_NAME;
 
     private static SdkConfigData? SdkConfig;
 
@@ -20,6 +20,7 @@ class AndroidDepsInjection : AndroidProjectFilesModifier
     {
         AndroidProjectFilesModifierContext projectFilesContext = new AndroidProjectFilesModifierContext();
         projectFilesContext.Outputs.AddBuildGradleFile(_sdkDepsOptionBuildGradle);
+
         projectFilesContext.Dependencies.DependencyFiles = new[] {
             Path.Combine("Assets", "Plugins", "Android", "athana-sdk-config.json")
         };
@@ -35,6 +36,18 @@ class AndroidDepsInjection : AndroidProjectFilesModifier
         else
         {
             SdkConfig = SdkConfigData.ReadForFile();
+        }
+        if (SdkConfig.ImportConversionFirebase() || SdkConfig.ImportPushFirebase())
+        {
+            var sourceFile = Path.Combine("Assets", "Plugins", "Android", FIREBASE_CONFIG_NAME);
+            if (File.Exists(sourceFile))
+            {
+                projectFilesContext.AddFileToCopy(sourceFile, _firebaseConfigJSON);
+            }
+            else
+            {
+                Debug.LogWarning($"{sourceFile} 文件不存在！");
+            }
         }
         return projectFilesContext;
     }
@@ -93,7 +106,14 @@ class AndroidDepsInjection : AndroidProjectFilesModifier
         // ----- Dependencies
         Dependencies Dependencies = CustomGradleFile.Dependencies;
         Dependencies.AddElement(new Element($"var sdkVersion = \"{SdkConfig.AndroidDepsVersion}\""));
-        Dependencies.AddDependencyImplementationRaw("\"com.inonesdk.athana:athana:${sdkVersion}\"");
+        if (SdkConfig.AndroidDepsVersion.EndsWith("SNAPSHOT"))
+        {
+            Dependencies.AddDependencyImplementationRaw("\"com.inonesdk.athana:athana-dev:${sdkVersion}\"");
+        }
+        else
+        {
+            Dependencies.AddDependencyImplementationRaw("\"com.inonesdk.athana:athana:${sdkVersion}\"");
+        }
 
         foreach (var dep in Components)
         {

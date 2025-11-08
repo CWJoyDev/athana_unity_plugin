@@ -1,7 +1,8 @@
 using UnityEditor;
 using UnityEngine;
 
-class SdkConfigEditorWindow: EditorWindow
+#nullable enable
+class SdkConfigEditorWindow : EditorWindow
 {
     [MenuItem("Assets/Athana/SDK Configuration")]
     public static void OpenSdkConfigWindows()

@@ -1,6 +1,7 @@
 using System;
 using Athana.Api;
 
+#nullable enable
 namespace Athana
 {
     public static class AppOpenAd
